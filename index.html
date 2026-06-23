@@ -1,0 +1,259 @@
+<!-- ============================================================ -->
+<!-- FILE: index.html (struktur)                                  -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Percetakan + WiFi E470</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <!-- ===== LANDING PAGE ===== -->
+    <div id="landingPage">
+        <nav class="navbar-public">
+            <div class="brand"><i class="fas fa-print"></i> Print<span style="color:#3b82f6;">Pro</span></div>
+            <div class="nav-links">
+                <a onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})"><i class="fas fa-upload"></i> Upload</a>
+                <a onclick="document.getElementById('statusSection').scrollIntoView({behavior:'smooth'})"><i class="fas fa-list"></i> Status</a>
+                <a onclick="showLogin()" class="btn btn-primary btn-sm"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </nav>
+        <div class="landing-container">
+            <div class="hero">
+                <h1>Cetak Mudah &amp; Cepat <span>#TanpaAntri</span></h1>
+                <p>Upload file, pilih printer, dan pantau status cetakan Anda secara real-time.</p>
+            </div>
+            <div id="uploadSection" class="upload-card">
+                <h3 style="font-size:20px;font-weight:700;margin-bottom:18px;"><i class="fas fa-cloud-upload-alt" style="color:#3b82f6;"></i> Upload File</h3>
+                <form id="publicUploadForm" onsubmit="handlePublicUpload(event)">
+                    <div class="form-group">
+                        <label>Nama File <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="publicFileName" placeholder="contoh: brosur.pdf" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Printer <span style="color:#ef4444;">*</span></label>
+                        <select id="publicPrinter" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Salinan</label>
+                        <input type="number" id="publicCopies" value="1" min="1" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Upload File</label>
+                        <div class="file-drop" onclick="document.getElementById('publicFileInput').click()">
+                            <i class="fas fa-file-upload"></i>
+                            <p>Klik atau seret file ke sini</p>
+                            <input type="file" id="publicFileInput" accept=".pdf,.doc,.docx,.jpg,.png,.ai,.psd" />
+                            <div class="file-name" id="publicFileNameDisplay">Belum ada file dipilih</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;padding:12px;font-size:16px;">
+                        <i class="fas fa-print"></i> Kirim Cetak
+                    </button>
+                </form>
+            </div>
+            <div id="statusSection" class="job-status-section">
+                <h3><i class="fas fa-clock" style="color:#3b82f6;"></i> Status Cetakan Terbaru</h3>
+                <div id="publicJobList"><div class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada pesanan dari publik</p></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="loginPage" class="login-page hidden">
+        <div class="login-box">
+            <div class="brand"><i class="fas fa-print"></i> PrintPro</div>
+            <div class="sub">Dashboard Admin</div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" value="admin" required />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" value="admin123" required />
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+                <div class="error-msg" id="loginError">Username atau password salah</div>
+            </form>
+            <div style="text-align:center;margin-top:16px;font-size:13px;color:#94a3b8;">
+                <a onclick="showLanding()" style="cursor:pointer;color:#3b82f6;">← Kembali ke Landing</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <div id="adminDashboard" class="hidden">
+        <div class="admin-wrapper">
+            <aside class="admin-sidebar" id="adminSidebar">
+                <div class="brand"><i class="fas fa-print"></i> Print<span style="color:#3b82f6;">Pro</span></div>
+                <nav>
+                    <a class="active" data-page="admin-dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                    <a data-page="admin-jobs"><i class="fas fa-list"></i> Semua Pesanan</a>
+                    <a data-page="admin-printers"><i class="fas fa-server"></i> Printer &amp; WiFi</a>
+                    <a data-page="admin-history"><i class="fas fa-clock-rotate-left"></i> Riwayat</a>
+                </nav>
+                <div class="footer">
+                    <i class="fas fa-circle" style="color:#22c55e;font-size:10px;"></i>
+                    <span style="flex:1;">Admin</span>
+                    <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+            </aside>
+            <main class="admin-main">
+                <div class="admin-header">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <button class="hamburger" id="adminHamburger"><i class="fas fa-bars"></i></button>
+                        <h1 id="adminPageTitle">Dashboard</h1>
+                    </div>
+                    <div class="user-badge"><i class="fas fa-user-shield"></i> admin</div>
+                </div>
+
+                <!-- Dashboard -->
+                <div id="page-admin-dashboard">
+                    <div class="stats-grid" id="adminStatsGrid">
+                        <div class="stat-card"><span class="label">Total Pesanan</span><div class="value" id="admStatTotal">0</div><div class="sub">semua waktu</div><div class="icon-circle icon-blue"><i class="fas fa-cubes"></i></div></div>
+                        <div class="stat-card"><span class="label">Diproses</span><div class="value" id="admStatProcessing">0</div><div class="sub">sedang berjalan</div><div class="icon-circle icon-yellow"><i class="fas fa-spinner"></i></div></div>
+                        <div class="stat-card"><span class="label">Selesai</span><div class="value" id="admStatCompleted">0</div><div class="sub">berhasil cetak</div><div class="icon-circle icon-green"><i class="fas fa-check-circle"></i></div></div>
+                        <div class="stat-card"><span class="label">Gagal</span><div class="value" id="admStatFailed">0</div><div class="sub">perlu perhatian</div><div class="icon-circle icon-red"><i class="fas fa-xmark-circle"></i></div></div>
+                        <div class="stat-card"><span class="label">Printer Online</span><div class="value" id="admStatPrinters">0</div><div class="sub">dari total</div><div class="icon-circle icon-purple"><i class="fas fa-wifi"></i></div></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                        <h2 style="font-size:18px;font-weight:600;">📋 Pesanan Terbaru</h2>
+                    </div>
+                    <div class="table-container"><div class="table-scroll"><table><thead><tr><th>ID</th><th>File</th><th>Printer</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="admRecentJobs"><tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada pesanan</p></td></tr></tbody></table></div></div>
+                </div>
+
+                <!-- Jobs -->
+                <div id="page-admin-jobs" style="display:none;">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn btn-primary" onclick="openAdminModal('job')"><i class="fas fa-plus"></i> Tambah Pesanan</button>
+                            <select id="adminFilterStatus" onchange="renderAdminJobs()" style="padding:8px 14px;border-radius:10px;border:1.5px solid #d1d5db;font-family:inherit;font-size:14px;background:#fff;">
+                                <option value="all">Semua Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right"><span style="font-size:14px;color:#64748b;" id="adminJobCount">0 pesanan</span></div>
+                    </div>
+                    <div class="table-container"><div class="table-scroll"><table><thead><tr><th>ID</th><th>File</th><th>Printer</th><th>Jml</th><th>Status</th><th>Waktu</th><th>Aksi</th></tr></thead><tbody id="adminJobsBody"><tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada pesanan</p></td></tr></tbody></table></div></div>
+                </div>
+
+                <!-- Printers -->
+                <div id="page-admin-printers" style="display:none;">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn btn-primary" onclick="openAdminModal('printer')"><i class="fas fa-plus"></i> Tambah Printer</button>
+                            <button class="btn btn-warning" onclick="scanAllPrinters()"><i class="fas fa-wifi"></i> Pindai Semua</button>
+                        </div>
+                        <div class="toolbar-right"><span style="font-size:14px;color:#64748b;" id="adminPrinterCount">0 printer</span></div>
+                    </div>
+                    <div class="table-container"><div class="table-scroll"><table><thead><tr><th>Nama</th><th>Model</th><th>SSID</th><th>IP:Port</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="adminPrintersBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-server"></i><p>Belum ada printer</p></td></tr></tbody></table></div></div>
+                </div>
+
+                <!-- Edit Printer Page -->
+                <div id="page-admin-edit-printer" style="display:none;">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn btn-outline" onclick="navigateAdmin('admin-printers')"><i class="fas fa-arrow-left"></i> Kembali</button>
+                            <h2 style="font-size:20px;font-weight:600;margin-left:10px;">Edit Printer</h2>
+                        </div>
+                    </div>
+                    <div class="upload-card" style="max-width:600px;margin:0 auto;">
+                        <form id="editPrinterForm" onsubmit="handleEditPrinterSubmit(event)">
+                            <input type="hidden" id="editPrinterId" />
+                            <div class="form-group">
+                                <label>Nama Printer <span style="color:#ef4444;">*</span></label>
+                                <input type="text" id="editPrinterName" placeholder="Epson E470 WiFi" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Model</label>
+                                <input type="text" id="editPrinterModel" placeholder="E470" />
+                            </div>
+                            <div class="form-group">
+                                <label>SSID (Nama WiFi)</label>
+                                <input type="text" id="editPrinterSSID" placeholder="BFDAC1-E470series" />
+                            </div>
+                            <div class="form-group">
+                                <label>Password WiFi</label>
+                                <input type="text" id="editPrinterPassword" placeholder="AGVY45046" />
+                            </div>
+                            <div class="form-group">
+                                <label>IP Address</label>
+                                <input type="text" id="editPrinterIP" placeholder="192.168.1.104" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Port (default: 80, 631, 8080)</label>
+                                <input type="text" id="editPrinterPort" placeholder="80" value="80" />
+                            </div>
+                            <div class="form-group">
+                                <label>Status Koneksi</label>
+                                <select id="editPrinterStatus">
+                                    <option value="online">Online</option>
+                                    <option value="offline">Offline</option>
+                                    <option value="connecting">Menghubungkan...</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="navigateAdmin('admin-printers')">Batal</button>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div id="page-admin-history" style="display:none;">
+                    <div class="toolbar">
+                        <div class="toolbar-left"><span style="font-size:15px;font-weight:500;">📜 Riwayat Pencetakan</span></div>
+                        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="clearAdminHistory()"><i class="fas fa-trash-can"></i> Hapus Semua</button></div>
+                    </div>
+                    <div class="table-container"><div class="table-scroll"><table><thead><tr><th>ID</th><th>File</th><th>Printer</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="adminHistoryBody"><tr><td colspan="5" class="empty-state"><i class="fas fa-clock"></i><p>Belum ada riwayat</p></td></tr></tbody></table></div></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="adminModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="adminModalTitle">Tambah</h2>
+                <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+            </div>
+            <form id="adminModalForm" onsubmit="handleAdminModalSubmit(event)">
+                <input type="hidden" id="adminFormId" />
+                <input type="hidden" id="adminFormType" value="job" />
+
+                <div class="form-group" id="admFgFileName"><label>Nama File</label><input type="text" id="admFormFileName" placeholder="contoh: brosur.pdf" required /></div>
+                <div class="form-group" id="admFgPrinter"><label>Printer</label><select id="admFormPrinter" required></select></div>
+                <div class="form-group" id="admFgCopies"><label>Jumlah Salinan</label><input type="number" id="admFormCopies" value="1" min="1" required /></div>
+                <div class="form-group" id="admFgStatus"><label>Status</label><select id="admFormStatus"><option value="pending">Pending</option><option value="processing">Processing</option><option value="completed">Completed</option><option value="failed">Failed</option></select></div>
+
+                <div class="form-group" id="admFgPrinterName" style="display:none;"><label>Nama Printer</label><input type="text" id="admFormPrinterName" placeholder="Epson L120" /></div>
+                <div class="form-group" id="admFgPrinterModel" style="display:none;"><label>Model</label><input type="text" id="admFormPrinterModel" placeholder="L120" /></div>
+                <div class="form-group" id="admFgPrinterSSID" style="display:none;"><label>SSID</label><input type="text" id="admFormPrinterSSID" placeholder="BFDAC1-E470series" /></div>
+                <div class="form-group" id="admFgPrinterPassword" style="display:none;"><label>Password</label><input type="text" id="admFormPrinterPassword" placeholder="AGVY45046" /></div>
+                <div class="form-group" id="admFgPrinterIP" style="display:none;"><label>IP Address</label><input type="text" id="admFormPrinterIP" placeholder="192.168.1.104" /></div>
+                <div class="form-group" id="admFgPrinterPort" style="display:none;"><label>Port</label><input type="text" id="admFormPrinterPort" placeholder="80" value="80" /></div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeAdminModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="adminModalSubmitBtn">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
